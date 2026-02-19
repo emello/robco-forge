@@ -1,0 +1,41 @@
+# Example terraform.tfvars for development environment
+# Copy this file to terraform.tfvars and fill in the values
+
+region = "us-west-2"
+vpc_cidr = "10.0.0.0/16"
+
+# EKS configuration
+kubernetes_version = "1.28"
+eks_enable_public_access = true
+eks_node_group_desired_size = 2
+eks_node_group_min_size = 2
+eks_node_group_max_size = 5
+eks_node_instance_types = ["t3.large"]
+
+# RDS configuration
+rds_instance_class = "db.t3.medium"
+rds_read_replica_instance_class = "db.t3.small"
+rds_allocated_storage = 50
+rds_max_allocated_storage = 200
+rds_skip_final_snapshot = true
+
+# FSx configuration
+fsx_storage_capacity_gb = 1024
+fsx_throughput_capacity_mbps = 128
+
+# Active Directory configuration
+active_directory_domain_name = "dev.robco.local"
+active_directory_username = "forge-service"
+active_directory_password = "CHANGE_ME_STRONG_PASSWORD"
+active_directory_ou_dn = "OU=FSx,OU=Computers,DC=dev,DC=robco,DC=local"
+
+# WorkSpaces configuration
+directory_name = "dev.robco.local"
+directory_password = "CHANGE_ME_STRONG_PASSWORD"
+directory_type = "MicrosoftAD"
+directory_edition = "Standard"
+workspaces_default_ou = "OU=WorkSpaces,OU=Computers,DC=dev,DC=robco,DC=local"
+
+# Monitoring configuration
+log_retention_days = 30
+alert_email_addresses = ["devops@robco.com"]

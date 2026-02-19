@@ -1,0 +1,44 @@
+---
+# Namespace for Forge API services
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: forge-api
+  labels:
+    name: forge-api
+    app.kubernetes.io/name: forge-api
+    app.kubernetes.io/component: api
+    app.kubernetes.io/part-of: robco-forge
+    pod-security.kubernetes.io/enforce: restricted
+    pod-security.kubernetes.io/audit: restricted
+    pod-security.kubernetes.io/warn: restricted
+
+---
+# Namespace for system components (monitoring, operators)
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: forge-system
+  labels:
+    name: forge-system
+    app.kubernetes.io/name: forge-system
+    app.kubernetes.io/component: system
+    app.kubernetes.io/part-of: robco-forge
+    pod-security.kubernetes.io/enforce: baseline
+    pod-security.kubernetes.io/audit: baseline
+    pod-security.kubernetes.io/warn: baseline
+
+---
+# Namespace for worker processes (Cost Engine, Celery workers)
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: forge-workers
+  labels:
+    name: forge-workers
+    app.kubernetes.io/name: forge-workers
+    app.kubernetes.io/component: workers
+    app.kubernetes.io/part-of: robco-forge
+    pod-security.kubernetes.io/enforce: restricted
+    pod-security.kubernetes.io/audit: restricted
+    pod-security.kubernetes.io/warn: restricted

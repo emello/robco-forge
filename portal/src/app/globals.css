@@ -1,0 +1,281 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Retro theme styles */
+.retro-theme {
+  background-color: #0a0e0a;
+  color: #33ff33;
+  font-family: 'VT323', 'Share Tech Mono', monospace;
+}
+
+.retro-scanline {
+  position: relative;
+  overflow: hidden;
+}
+
+.retro-scanline::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(
+    to bottom,
+    rgba(51, 255, 51, 0) 0%,
+    rgba(51, 255, 51, 0.3) 50%,
+    rgba(51, 255, 51, 0) 100%
+  );
+  animation: scanline 8s linear infinite;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+.retro-scanline::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.15),
+    rgba(0, 0, 0, 0.15) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+  pointer-events: none;
+  z-index: 999;
+}
+
+.retro-flicker {
+  animation: flicker 0.15s infinite;
+}
+
+.retro-glow {
+  text-shadow: 0 0 10px #33ff33, 0 0 20px #33ff33, 0 0 30px #33ff33;
+}
+
+.retro-border {
+  border: 2px solid #33ff33;
+  box-shadow: 0 0 10px #33ff33, inset 0 0 10px #33ff33;
+}
+
+.retro-crt {
+  position: relative;
+}
+
+.retro-crt::before {
+  content: ' ';
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+    linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+  z-index: 2;
+  background-size: 100% 2px, 3px 100%;
+  pointer-events: none;
+}
+
+.retro-ascii-border {
+  border: 2px solid #33ff33;
+  position: relative;
+}
+
+.retro-ascii-border::before {
+  content: '╔═══════════════════════════════════════════════════════════════════════════════╗';
+  position: absolute;
+  top: -2px;
+  left: 0;
+  right: 0;
+  color: #33ff33;
+  font-family: monospace;
+  font-size: 12px;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.retro-ascii-border::after {
+  content: '╚═══════════════════════════════════════════════════════════════════════════════╝';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  color: #33ff33;
+  font-family: monospace;
+  font-size: 12px;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+@keyframes scanline {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(100vh);
+  }
+}
+
+@keyframes flicker {
+  0% {
+    opacity: 0.97;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.97;
+  }
+}
+
+@keyframes blink {
+  0%, 49% {
+    opacity: 1;
+  }
+  50%, 100% {
+    opacity: 0;
+  }
+}
+
+.retro-cursor {
+  animation: blink 1s step-end infinite;
+}
+
+/* Keyboard Navigation & Accessibility */
+
+/* Enhanced focus indicators for keyboard navigation */
+*:focus-visible {
+  outline: 3px solid #3b82f6;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.retro *:focus-visible {
+  outline: 3px solid #33ff33;
+  outline-offset: 2px;
+  box-shadow: 0 0 10px #33ff33;
+}
+
+/* Skip to main content link */
+.skip-to-main {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: #3b82f6;
+  color: white;
+  padding: 8px 16px;
+  text-decoration: none;
+  z-index: 9999;
+  border-radius: 0 0 4px 0;
+}
+
+.skip-to-main:focus {
+  top: 0;
+}
+
+.retro .skip-to-main {
+  background: #0a0e0a;
+  color: #33ff33;
+  border: 2px solid #33ff33;
+}
+
+/* Keyboard shortcuts indicator */
+.keyboard-shortcut {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 6px;
+  background: rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: monospace;
+}
+
+.retro .keyboard-shortcut {
+  background: rgba(51, 255, 51, 0.1);
+  border: 1px solid #33ff33;
+  color: #33ff33;
+}
+
+/* Ensure all interactive elements are keyboard accessible */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[role="button"]:focus-visible,
+[role="link"]:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+.retro button:focus-visible,
+.retro a:focus-visible,
+.retro input:focus-visible,
+.retro select:focus-visible,
+.retro textarea:focus-visible,
+.retro [role="button"]:focus-visible,
+.retro [role="link"]:focus-visible,
+.retro [tabindex]:focus-visible {
+  outline: 3px solid #33ff33;
+  box-shadow: 0 0 10px #33ff33;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  .retro-scanline::before,
+  .retro-scanline::after,
+  .retro-flicker,
+  .retro-cursor {
+    animation: none !important;
+  }
+}

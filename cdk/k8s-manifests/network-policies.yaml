@@ -1,0 +1,278 @@
+---
+# Network Policy for forge-api namespace
+# Allows ingress from ALB and egress to RDS, Redis, and external APIs
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: forge-api-network-policy
+  namespace: forge-api
+  labels:
+    app.kubernetes.io/name: forge-api
+    app.kubernetes.io/component: network-policy
+    app.kubernetes.io/part-of: robco-forge
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/part-of: robco-forge
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Allow ingress from ALB/Ingress controller
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: kube-system
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: aws-load-balancer-controller
+      ports:
+        - protocol: TCP
+          port: 8000  # FastAPI default port
+    # Allow ingress from within the same namespace (service-to-service)
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/part-of: robco-forge
+      ports:
+        - protocol: TCP
+          port: 8000
+    # Allow ingress from monitoring namespace for metrics scraping
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: forge-system
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: prometheus
+      ports:
+        - protocol: TCP
+          port: 9090  # Prometheus metrics port
+  egress:
+    # Allow DNS resolution
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: kube-system
+        - podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+    # Allow egress to RDS (PostgreSQL)
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 5432
+    # Allow egress to Redis/ElastiCache
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 6379
+    # Allow egress to AWS APIs (HTTPS)
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 443
+    # Allow egress within the same namespace
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/part-of: robco-forge
+      ports:
+        - protocol: TCP
+          port: 8000
+
+---
+# Network Policy for forge-workers namespace
+# Allows egress to AWS APIs, RDS, and Redis
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: forge-workers-network-policy
+  namespace: forge-workers
+  labels:
+    app.kubernetes.io/name: forge-workers
+    app.kubernetes.io/component: network-policy
+    app.kubernetes.io/part-of: robco-forge
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/part-of: robco-forge
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Allow ingress from monitoring namespace for metrics scraping
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: forge-system
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: prometheus
+      ports:
+        - protocol: TCP
+          port: 9090  # Prometheus metrics port
+    # Allow ingress from API namespace (for triggering jobs)
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: forge-api
+      ports:
+        - protocol: TCP
+          port: 8000
+  egress:
+    # Allow DNS resolution
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: kube-system
+        - podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+    # Allow egress to RDS (PostgreSQL)
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 5432
+    # Allow egress to Redis/ElastiCache
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 6379
+    # Allow egress to AWS APIs (HTTPS)
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 443
+
+---
+# Network Policy for forge-system namespace (monitoring)
+# Allows scraping metrics from all namespaces
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: forge-system-network-policy
+  namespace: forge-system
+  labels:
+    app.kubernetes.io/name: forge-system
+    app.kubernetes.io/component: network-policy
+    app.kubernetes.io/part-of: robco-forge
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/part-of: robco-forge
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Allow ingress to Grafana from ALB
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: kube-system
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: aws-load-balancer-controller
+      ports:
+        - protocol: TCP
+          port: 3000  # Grafana default port
+    # Allow Prometheus to receive metrics from itself
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: prometheus
+      ports:
+        - protocol: TCP
+          port: 9090
+  egress:
+    # Allow DNS resolution
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: kube-system
+        - podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+    # Allow Prometheus to scrape metrics from all namespaces
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 9090
+        - protocol: TCP
+          port: 8000
+    # Allow egress to AWS APIs for CloudWatch data source
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 443
+    # Allow Grafana to query Prometheus
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: prometheus
+      ports:
+        - protocol: TCP
+          port: 9090
+
+---
+# Default deny all ingress policy for forge-api namespace
+# This ensures only explicitly allowed traffic is permitted
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-ingress
+  namespace: forge-api
+  labels:
+    app.kubernetes.io/component: network-policy
+    app.kubernetes.io/part-of: robco-forge
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+
+---
+# Default deny all ingress policy for forge-workers namespace
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-ingress
+  namespace: forge-workers
+  labels:
+    app.kubernetes.io/component: network-policy
+    app.kubernetes.io/part-of: robco-forge
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+
+---
+# Default deny all ingress policy for forge-system namespace
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-ingress
+  namespace: forge-system
+  labels:
+    app.kubernetes.io/component: network-policy
+    app.kubernetes.io/part-of: robco-forge
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress

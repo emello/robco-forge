@@ -1,0 +1,227 @@
+---
+# Role for Forge API pods - allows reading ConfigMaps and Secrets
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: forge-api-role
+  namespace: forge-api
+  labels:
+    app.kubernetes.io/name: forge-api
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/part-of: robco-forge
+rules:
+  # Allow reading ConfigMaps for application configuration
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get", "list", "watch"]
+  # Allow reading Secrets (managed by External Secrets Operator)
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "list", "watch"]
+  # Allow reading Services for service discovery
+  - apiGroups: [""]
+    resources: ["services"]
+    verbs: ["get", "list"]
+  # Allow reading Pods for health checks
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list"]
+
+---
+# RoleBinding for Forge API service account
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: forge-api-rolebinding
+  namespace: forge-api
+  labels:
+    app.kubernetes.io/name: forge-api
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/part-of: robco-forge
+subjects:
+  - kind: ServiceAccount
+    name: forge-api-sa
+    namespace: forge-api
+roleRef:
+  kind: Role
+  name: forge-api-role
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# Role for Lucy AI service - similar permissions to API
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: forge-lucy-role
+  namespace: forge-api
+  labels:
+    app.kubernetes.io/name: forge-lucy
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/part-of: robco-forge
+rules:
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["services"]
+    verbs: ["get", "list"]
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list"]
+
+---
+# RoleBinding for Lucy service account
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: forge-lucy-rolebinding
+  namespace: forge-api
+  labels:
+    app.kubernetes.io/name: forge-lucy
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/part-of: robco-forge
+subjects:
+  - kind: ServiceAccount
+    name: forge-lucy-sa
+    namespace: forge-api
+roleRef:
+  kind: Role
+  name: forge-lucy-role
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# Role for Cost Engine workers
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: forge-cost-engine-role
+  namespace: forge-workers
+  labels:
+    app.kubernetes.io/name: forge-cost-engine
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/part-of: robco-forge
+rules:
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["services"]
+    verbs: ["get", "list"]
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list"]
+
+---
+# RoleBinding for Cost Engine service account
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: forge-cost-engine-rolebinding
+  namespace: forge-workers
+  labels:
+    app.kubernetes.io/name: forge-cost-engine
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/part-of: robco-forge
+subjects:
+  - kind: ServiceAccount
+    name: forge-cost-engine-sa
+    namespace: forge-workers
+roleRef:
+  kind: Role
+  name: forge-cost-engine-role
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# Role for Prometheus - needs to scrape metrics from all namespaces
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: prometheus-cluster-role
+  labels:
+    app.kubernetes.io/name: prometheus
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/part-of: robco-forge
+rules:
+  # Allow discovering and scraping metrics from all pods
+  - apiGroups: [""]
+    resources:
+      - nodes
+      - nodes/metrics
+      - services
+      - endpoints
+      - pods
+    verbs: ["get", "list", "watch"]
+  # Allow reading ConfigMaps for service discovery
+  - apiGroups: [""]
+    resources:
+      - configmaps
+    verbs: ["get"]
+  # Allow reading metrics from API server
+  - nonResourceURLs:
+      - /metrics
+      - /metrics/cadvisor
+    verbs: ["get"]
+
+---
+# ClusterRoleBinding for Prometheus service account
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: prometheus-cluster-rolebinding
+  labels:
+    app.kubernetes.io/name: prometheus
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/part-of: robco-forge
+subjects:
+  - kind: ServiceAccount
+    name: prometheus-sa
+    namespace: forge-system
+roleRef:
+  kind: ClusterRole
+  name: prometheus-cluster-role
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# Role for Grafana in forge-system namespace
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: grafana-role
+  namespace: forge-system
+  labels:
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/part-of: robco-forge
+rules:
+  - apiGroups: [""]
+    resources: ["configmaps", "secrets"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["services"]
+    verbs: ["get", "list"]
+
+---
+# RoleBinding for Grafana service account
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: grafana-rolebinding
+  namespace: forge-system
+  labels:
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/part-of: robco-forge
+subjects:
+  - kind: ServiceAccount
+    name: grafana-sa
+    namespace: forge-system
+roleRef:
+  kind: Role
+  name: grafana-role
+  apiGroup: rbac.authorization.k8s.io
