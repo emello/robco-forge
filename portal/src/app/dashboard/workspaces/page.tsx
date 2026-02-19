@@ -8,10 +8,10 @@
 
 import { useState } from 'react';
 import { useWorkspaces } from '@/hooks/use-workspaces';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { ProvisionModal } from '@/components/workspaces/provision-modal';
 import { WorkspaceActions } from '@/components/workspaces/workspace-actions';
-import { formatDate, formatCurrency, getStatusColor } from '@/lib/utils';
+import { formatDate, getStatusColor } from '@/lib/utils';
 import { WorkspaceStatus, BundleType } from '@/types';
 
 export default function WorkspacesPage() {
@@ -24,8 +24,8 @@ export default function WorkspacesPage() {
   const { data: workspaces, isLoading, error } = useWorkspaces();
 
   // Filter and sort workspaces
-  const filteredAndSortedWorkspaces = workspaces?.items
-    .filter((ws) => {
+  const filteredAndSortedWorkspaces = workspaces
+    ?.filter((ws) => {
       if (statusFilter !== 'all' && ws.status !== statusFilter) return false;
       if (bundleFilter !== 'all' && ws.bundle_type !== bundleFilter) return false;
       return true;
@@ -266,7 +266,7 @@ export default function WorkspacesPage() {
       {/* Results Count */}
       {!isLoading && !error && filteredAndSortedWorkspaces.length > 0 && (
         <div className="mt-4 text-sm text-gray-600 dark:text-gray-400 retro:text-green-400 retro:font-mono">
-          Showing {filteredAndSortedWorkspaces.length} of {workspaces?.items.length || 0} workspaces
+          Showing {filteredAndSortedWorkspaces.length} of {workspaces?.length || 0} workspaces
         </div>
       )}
 

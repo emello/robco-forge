@@ -1,0 +1,99 @@
+{
+  "cloudwatch_dashboard_name": {
+    "sensitive": false,
+    "type": "string",
+    "value": "production-forge-dashboard"
+  },
+  "directory_dns_ips": {
+    "sensitive": false,
+    "type": [
+      "set",
+      "string"
+    ],
+    "value": [
+      "10.2.12.112",
+      "10.2.23.105"
+    ]
+  },
+  "eks_cluster_endpoint": {
+    "sensitive": false,
+    "type": "string",
+    "value": "https://93EB875D8D2DE4D322DA0A6122607DE7.gr7.us-east-1.eks.amazonaws.com"
+  },
+  "eks_cluster_name": {
+    "sensitive": false,
+    "type": "string",
+    "value": "production-forge-cluster"
+  },
+  "eks_oidc_provider_arn": {
+    "sensitive": false,
+    "type": "string",
+    "value": "arn:aws:iam::575108939164:oidc-provider/oidc.eks.us-east-1.amazonaws.com/id/93EB875D8D2DE4D322DA0A6122607DE7"
+  },
+  "fsx_dns_name": {
+    "sensitive": false,
+    "type": "string",
+    "value": ""
+  },
+  "fsx_file_system_id": {
+    "sensitive": false,
+    "type": "string",
+    "value": "fs-0a1c58fb3c8d8bd14"
+  },
+  "fsx_svm_id": {
+    "sensitive": false,
+    "type": "string",
+    "value": "svm-08b25095d2f020dfb"
+  },
+  "private_subnet_ids": {
+    "sensitive": false,
+    "type": [
+      "tuple",
+      [
+        "string",
+        "string",
+        "string"
+      ]
+    ],
+    "value": [
+      "subnet-0a48ae6b725baeaec",
+      "subnet-05fe5d43acbeee519",
+      "subnet-058fdc779af7c2bb5"
+    ]
+  },
+  "rds_endpoint": {
+    "sensitive": false,
+    "type": "string",
+    "value": "production-forge-db.cl6cq84yuuew.us-east-1.rds.amazonaws.com:5432"
+  },
+  "rds_password_secret_arn": {
+    "sensitive": false,
+    "type": "string",
+    "value": "arn:aws:secretsmanager:us-east-1:575108939164:secret:production/forge/rds/master-password-UYjelb"
+  },
+  "rds_read_replica_endpoint": {
+    "sensitive": false,
+    "type": "string",
+    "value": "production-forge-db-read-replica.cl6cq84yuuew.us-east-1.rds.amazonaws.com:5432"
+  },
+  "sns_topic_arn": {
+    "sensitive": false,
+    "type": "string",
+    "value": "arn:aws:sns:us-east-1:575108939164:production-forge-alerts"
+  },
+  "vpc_id": {
+    "sensitive": false,
+    "type": "string",
+    "value": "vpc-07505be1e73020576"
+  },
+  "workspaces_directory_id": {
+    "sensitive": false,
+    "type": "string",
+    "value": "d-9066004bc0"
+  },
+  "workspaces_registration_code": {
+    "sensitive": false,
+    "type": "string",
+    "value": "SLiad+JTHMAT"
+  }
+}

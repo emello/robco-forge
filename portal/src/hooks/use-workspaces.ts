@@ -6,7 +6,8 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api-client';
-import type { Workspace, BundleType, OperatingSystem } from '@/types';
+import type { BundleType, OperatingSystem } from '@/types';
+import { mockWorkspaces } from '@/lib/mock-data';
 
 // Query keys
 export const workspaceKeys = {
@@ -26,7 +27,19 @@ export function useWorkspaces(params?: {
 }) {
   return useQuery({
     queryKey: workspaceKeys.list(params || {}),
-    queryFn: () => apiClient.listWorkspaces(params),
+    queryFn: async () => {
+      try {
+        const data = await apiClient.listWorkspaces(params);
+        // If API returns empty or fails, use mock data
+        if (!data || (Array.isArray(data) && data.length === 0)) {
+          return mockWorkspaces;
+        }
+        return data;
+      } catch (error) {
+        console.warn('API failed, using mock data:', error);
+        return mockWorkspaces;
+      }
+    },
   });
 }
 

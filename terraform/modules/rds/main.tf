@@ -78,7 +78,7 @@ resource "aws_secretsmanager_secret_version" "rds_master_password" {
 resource "aws_db_instance" "main" {
   identifier     = "${var.environment}-forge-db"
   engine         = "postgres"
-  engine_version = "15.4"
+  engine_version = "15.16"  # Latest available version
   instance_class = var.instance_class
   
   allocated_storage     = var.allocated_storage
@@ -135,11 +135,13 @@ resource "aws_db_parameter_group" "main" {
   parameter {
     name  = "max_connections"
     value = "200"
+    apply_method = "pending-reboot"  # Static parameter requires reboot
   }
   
   parameter {
     name  = "shared_buffers"
     value = "{DBInstanceClassMemory/4096}"
+    apply_method = "pending-reboot"  # Static parameter requires reboot
   }
   
   parameter {
@@ -160,6 +162,7 @@ resource "aws_db_parameter_group" "main" {
   parameter {
     name  = "wal_buffers"
     value = "16384"  # 16MB
+    apply_method = "pending-reboot"  # Static parameter requires reboot
   }
   
   parameter {

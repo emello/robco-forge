@@ -126,10 +126,13 @@ export interface LucyMessage {
 }
 
 export interface LucyResponse {
-  response: string;
+  message: string;
+  conversation_id: string;
   intent?: string;
   tool_executed?: string;
+  tool_result?: Record<string, unknown>;
   requires_confirmation?: boolean;
+  confirmation_message?: string;
 }
 
 // API Error types

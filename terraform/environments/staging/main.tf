@@ -136,19 +136,6 @@ module "fsx" {
   
   depends_on = [module.networking, module.workspaces]
 }
-  vpc_id                        = module.networking.vpc_id
-  private_subnet_ids            = module.networking.private_subnet_ids
-  workspaces_security_group_id  = module.networking.workspaces_security_group_id
-  directory_name                = var.directory_name
-  directory_password            = var.directory_password
-  directory_type                = var.directory_type
-  directory_edition             = var.directory_edition
-  default_ou                    = var.workspaces_default_ou
-  
-  tags = local.common_tags
-  
-  depends_on = [module.networking]
-}
 
 # Monitoring Module
 module "monitoring" {

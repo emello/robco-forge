@@ -6,7 +6,7 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 interface AnnouncerProps {
   message: string;
@@ -30,7 +30,7 @@ export function ScreenReaderAnnouncer({ message, priority = 'polite' }: Announce
 export function useScreenReaderAnnounce() {
   const [announcement, setAnnouncement] = useState('');
 
-  const announce = (message: string, priority: 'polite' | 'assertive' = 'polite') => {
+  const announce = (message: string, _priority: 'polite' | 'assertive' = 'polite') => {
     setAnnouncement(''); // Clear first to ensure re-announcement
     setTimeout(() => setAnnouncement(message), 100);
   };

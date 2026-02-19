@@ -46,7 +46,7 @@ export function WorkspaceList() {
     );
   }
 
-  const activeWorkspaces = workspaces?.items.filter(
+  const activeWorkspaces = workspaces?.filter(
     (ws) =>
       ws.status === WorkspaceStatus.AVAILABLE ||
       ws.status === WorkspaceStatus.STARTING ||

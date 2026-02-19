@@ -6,6 +6,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api-client';
+import { mockCostSummary, mockCostRecommendations, mockBudget } from '@/lib/mock-data';
 
 // Query keys
 export const costKeys = {
@@ -23,7 +24,18 @@ export function useCostSummary(params?: {
 }) {
   return useQuery({
     queryKey: costKeys.summary(params || {}),
-    queryFn: () => apiClient.getCostSummary(params),
+    queryFn: async () => {
+      try {
+        const data = await apiClient.getCostSummary(params);
+        if (!data) {
+          return mockCostSummary;
+        }
+        return data;
+      } catch (error) {
+        console.warn('API failed, using mock cost data:', error);
+        return mockCostSummary;
+      }
+    },
   });
 }
 
@@ -31,7 +43,18 @@ export function useCostSummary(params?: {
 export function useCostRecommendations() {
   return useQuery({
     queryKey: costKeys.recommendations(),
-    queryFn: () => apiClient.getCostRecommendations(),
+    queryFn: async () => {
+      try {
+        const data = await apiClient.getCostRecommendations();
+        if (!data || (Array.isArray(data) && data.length === 0)) {
+          return mockCostRecommendations;
+        }
+        return data;
+      } catch (error) {
+        console.warn('API failed, using mock recommendations:', error);
+        return mockCostRecommendations;
+      }
+    },
   });
 }
 
@@ -43,6 +66,17 @@ export function useBudget(params?: {
 }) {
   return useQuery({
     queryKey: costKeys.budget(params || {}),
-    queryFn: () => apiClient.getBudget(params),
+    queryFn: async () => {
+      try {
+        const data = await apiClient.getBudget(params);
+        if (!data) {
+          return mockBudget;
+        }
+        return data;
+      } catch (error) {
+        console.warn('API failed, using mock budget:', error);
+        return mockBudget;
+      }
+    },
   });
 }

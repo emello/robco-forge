@@ -29,7 +29,7 @@ export default function DashboardLayout({
   const userId = 'user-123';
   
   // Connect to WebSocket for real-time updates
-  const { isConnected } = useWebSocket(userId);
+  useWebSocket(userId);
 
   return (
     <ProtectedRoute>

@@ -7,7 +7,6 @@
  */
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/auth-context';
 import { cn } from '@/lib/utils';
 
@@ -15,7 +14,6 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { login } = useAuth();
-  const router = useRouter();
 
   const handleSSOLogin = async () => {
     setIsLoading(true);

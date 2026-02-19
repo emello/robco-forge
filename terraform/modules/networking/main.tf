@@ -1,8 +1,42 @@
 # Networking Module - VPC, Subnets, NAT Gateway, VPC Endpoints
 # Requirements: 9.1, 9.2, 9.3, 9.5
 
+# WorkSpaces Personal compatible AZ IDs by region
+# Note: This requirement ONLY applies to WorkSpaces Personal, not WorkSpaces Applications or MAD
+# Source: https://docs.aws.amazon.com/workspaces/latest/adminguide/azs-workspaces.html
 locals {
-  azs = slice(data.aws_availability_zones.available.names, 0, 3)
+  workspaces_az_ids_by_region = {
+    "us-east-1"      = ["use1-az2", "use1-az4", "use1-az6"]
+    "us-west-2"      = ["usw2-az1", "usw2-az2", "usw2-az3"]
+    "ap-south-1"     = ["aps1-az1", "aps1-az2", "aps1-az3"]
+    "ap-northeast-2" = ["apne2-az1", "apne2-az3"]
+    "ap-southeast-1" = ["apse1-az1", "apse1-az2"]
+    "ap-southeast-2" = ["apse2-az1", "apse2-az3"]
+    "ap-northeast-1" = ["apne1-az1", "apne1-az4"]
+    "ca-central-1"   = ["cac1-az1", "cac1-az2"]
+    "eu-central-1"   = ["euc1-az2", "euc1-az3"]
+    "eu-west-1"      = ["euw1-az1", "euw1-az2", "euw1-az3"]
+    "eu-west-2"      = ["euw2-az2", "euw2-az3"]
+    "eu-west-3"      = ["euw3-az1", "euw3-az2", "euw3-az3"]
+    "sa-east-1"      = ["sae1-az1", "sae1-az3"]
+    "af-south-1"     = ["afs1-az1", "afs1-az2", "afs1-az3"]
+    "il-central-1"   = ["ilc1-az1", "ilc1-az2", "ilc1-az3"]
+    "us-gov-west-1"  = ["usgw1-az1", "usgw1-az2", "usgw1-az3"]
+    "us-gov-east-1"  = ["usge1-az1", "usge1-az2", "usge1-az3"]
+  }
+  
+  # Get WorkSpaces Personal compatible AZ IDs for current region
+  workspaces_az_ids = lookup(local.workspaces_az_ids_by_region, var.region, [])
+  
+  # Filter available AZs to only include WorkSpaces Personal compatible ones
+  # Use first 3 WorkSpaces-compatible AZs (or 2 if only 2 are available)
+  workspaces_compatible_azs = [
+    for az in data.aws_availability_zones.available.names :
+    az if contains(local.workspaces_az_ids, data.aws_availability_zones.available.zone_ids[index(data.aws_availability_zones.available.names, az)])
+  ]
+  
+  # Use up to 3 WorkSpaces-compatible AZs
+  azs = slice(local.workspaces_compatible_azs, 0, min(3, length(local.workspaces_compatible_azs)))
 }
 
 data "aws_availability_zones" "available" {

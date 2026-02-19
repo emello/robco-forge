@@ -139,6 +139,9 @@ resource "aws_eks_node_group" "main" {
   capacity_type  = "ON_DEMAND"
   disk_size      = 50
   
+  # Let AWS select the latest AMI for the cluster version
+  # This avoids AMI version compatibility issues
+  
   update_config {
     max_unavailable = 1
   }
@@ -157,6 +160,10 @@ resource "aws_eks_node_group" "main" {
     aws_iam_role_policy_attachment.node_group_cni_policy,
     aws_iam_role_policy_attachment.node_group_registry_policy
   ]
+  
+  lifecycle {
+    ignore_changes = [scaling_config[0].desired_size]
+  }
 }
 
 # IAM role for EKS node group

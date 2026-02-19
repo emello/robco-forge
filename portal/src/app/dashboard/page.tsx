@@ -24,7 +24,7 @@ export default function DashboardPage() {
   const { data: recommendations } = useCostRecommendations();
 
   // Calculate stats
-  const activeWorkspaces = workspaces?.items.filter(
+  const activeWorkspaces = workspaces?.filter(
     (ws) =>
       ws.status === WorkspaceStatus.AVAILABLE ||
       ws.status === WorkspaceStatus.STARTING ||

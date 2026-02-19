@@ -74,7 +74,7 @@ resource "aws_kms_alias" "fsx" {
 # FSx for NetApp ONTAP filesystem
 resource "aws_fsx_ontap_file_system" "main" {
   storage_capacity    = var.storage_capacity_gb
-  subnet_ids          = var.private_subnet_ids
+  subnet_ids          = slice(var.private_subnet_ids, 0, 2)  # FSx requires exactly 2 subnets
   deployment_type     = "MULTI_AZ_1"
   throughput_capacity = var.throughput_capacity_mbps
   preferred_subnet_id = var.private_subnet_ids[0]
@@ -152,6 +152,11 @@ resource "aws_fsx_ontap_volume" "users_root" {
   tiering_policy {
     name           = "AUTO"
     cooling_period = 31
+  }
+  
+  # Root volume properties cannot be modified after creation
+  lifecycle {
+    ignore_changes = [junction_path, storage_efficiency_enabled, tiering_policy]
   }
   
   tags = merge(var.tags, {

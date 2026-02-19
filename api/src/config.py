@@ -17,11 +17,11 @@ class Settings(BaseSettings):
     REDIS_DB: int = 0
     REDIS_SSL: bool = False
     
-    # Okta SSO
-    OKTA_METADATA_URL: str
-    OKTA_SP_ENTITY_ID: str
-    OKTA_SP_ACS_URL: str
-    OKTA_SP_SLS_URL: str
+    # Okta SSO (optional for now)
+    OKTA_METADATA_URL: Optional[str] = None
+    OKTA_SP_ENTITY_ID: Optional[str] = None
+    OKTA_SP_ACS_URL: Optional[str] = None
+    OKTA_SP_SLS_URL: Optional[str] = None
     
     # JWT
     JWT_SECRET_KEY: str

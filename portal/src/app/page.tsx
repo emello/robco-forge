@@ -1,6 +1,7 @@
 'use client';
 
 import { ThemeToggle } from '@/components/theme-toggle';
+import Link from 'next/link';
 
 export default function Home() {
   return (
@@ -12,6 +13,15 @@ export default function Home() {
       <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm">
         <h1 className="text-4xl font-bold mb-4">RobCo Forge</h1>
         <p className="text-xl mb-8">Self-service cloud engineering workstation platform</p>
+        
+        <div className="mb-8">
+          <Link 
+            href="/login"
+            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors inline-block"
+          >
+            Get Started →
+          </Link>
+        </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
           <div className="p-6 border rounded-lg hover:shadow-lg transition-shadow">

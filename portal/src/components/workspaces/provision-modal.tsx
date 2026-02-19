@@ -28,7 +28,7 @@ const BUNDLE_PRICING = {
 };
 
 // Bundle specifications
-const BUNDLE_SPECS = {
+const BUNDLE_SPECS: Record<BundleType, { cpu: string; memory: string; gpu?: string; description: string }> = {
   [BundleType.STANDARD]: { cpu: '2 vCPU', memory: '8 GB', description: 'Light development work' },
   [BundleType.PERFORMANCE]: { cpu: '8 vCPU', memory: '32 GB', description: 'Standard development' },
   [BundleType.POWER]: { cpu: '16 vCPU', memory: '64 GB', description: 'Heavy workloads' },
@@ -74,7 +74,6 @@ export function ProvisionModal({ isOpen, onClose }: ProvisionModalProps) {
   };
 
   const estimatedCost = BUNDLE_PRICING[bundleType];
-  const specs = BUNDLE_SPECS[bundleType];
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Provision New Workspace" size="lg">

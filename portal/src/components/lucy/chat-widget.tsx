@@ -51,7 +51,7 @@ export function ChatWidget({ userId, isOpen, onClose }: ChatWidgetProps) {
             setPendingConfirmation(messageToSend);
             const confirmMessage: LucyMessage = {
               role: 'assistant',
-              content: `${response.response}\n\nPlease confirm by typing "yes" or cancel by typing "no".`,
+              content: `${response.message}\n\nPlease confirm by typing "yes" or cancel by typing "no".`,
               timestamp: new Date().toISOString(),
             };
             setMessages((prev) => [...prev, confirmMessage]);
@@ -59,7 +59,7 @@ export function ChatWidget({ userId, isOpen, onClose }: ChatWidgetProps) {
           }
           
           // Build assistant message with tool execution feedback
-          let content = response.response;
+          let content = response.message;
           
           // Add tool execution feedback if available
           if (response.tool_executed) {
@@ -79,9 +79,9 @@ export function ChatWidget({ userId, isOpen, onClose }: ChatWidgetProps) {
           setMessages((prev) => [...prev, assistantMessage]);
           
           // Show cost warning if response contains cost-related keywords
-          if (response.response.toLowerCase().includes('budget') || 
-              response.response.toLowerCase().includes('cost') ||
-              response.response.toLowerCase().includes('expensive')) {
+          if (response.message.toLowerCase().includes('budget') || 
+              response.message.toLowerCase().includes('cost') ||
+              response.message.toLowerCase().includes('expensive')) {
             const warningMessage: LucyMessage = {
               role: 'assistant',
               content: '💰 Tip: You can check your current budget status in the Cost Dashboard to avoid surprises!',
@@ -122,7 +122,7 @@ export function ChatWidget({ userId, isOpen, onClose }: ChatWidgetProps) {
           onSuccess: (response) => {
             const assistantMessage: LucyMessage = {
               role: 'assistant',
-              content: response.response,
+              content: response.message,
               timestamp: new Date().toISOString(),
             };
             setMessages((prev) => [...prev, assistantMessage]);

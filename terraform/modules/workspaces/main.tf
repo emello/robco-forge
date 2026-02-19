@@ -37,8 +37,8 @@ resource "aws_secretsmanager_secret_version" "directory_password" {
 resource "aws_workspaces_directory" "main" {
   directory_id = aws_directory_service_directory.main.id
   
-  # Subnet IDs for WorkSpaces (can use all private subnets)
-  subnet_ids = var.private_subnet_ids
+  # Subnet IDs for WorkSpaces - must be exactly 2 subnets in different AZs
+  subnet_ids = slice(var.private_subnet_ids, 0, 2)
   
   # Self-service permissions (disabled for security)
   self_service_permissions {
@@ -73,6 +73,8 @@ resource "aws_workspaces_directory" "main" {
   tags = merge(var.tags, {
     Name = "${var.environment}-forge-workspaces-directory"
   })
+  
+  depends_on = [aws_directory_service_directory.main]
 }
 
 # IP Group for access control (optional - can restrict by IP)

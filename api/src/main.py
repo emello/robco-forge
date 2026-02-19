@@ -22,7 +22,8 @@ from prometheus_client import make_asgi_app
 import structlog
 
 from .config import settings
-from .database import engine, Base
+from .database import engine
+from .models import Base
 from .api import auth_routes
 from .audit import AuditMiddleware
 
@@ -292,6 +293,10 @@ app.include_router(audit_routes.router)
 # Import budget routes
 from .api import budget_routes
 app.include_router(budget_routes.router)
+
+# Import Lucy AI routes
+from .api import lucy_routes
+app.include_router(lucy_routes.router)
 
 
 # Instrument FastAPI with OpenTelemetry

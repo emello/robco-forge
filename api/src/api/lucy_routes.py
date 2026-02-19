@@ -12,7 +12,7 @@ import logging
 
 from ..lucy.context_manager import ConversationContext, get_conversation_context, save_conversation_context, clear_conversation_context
 from ..lucy.intent_recognizer import IntentRecognizer
-from ..lucy.audit import log_lucy_query, log_lucy_conversation_start, log_lucy_conversation_end
+from ..lucy.audit import log_lucy_query, _lucy_audit_logger
 
 logger = logging.getLogger(__name__)
 
@@ -119,7 +119,7 @@ async def chat_with_lucy(
                     created_at=datetime.utcnow(),
                     last_activity=datetime.utcnow(),
                 )
-                log_lucy_conversation_start(
+                _lucy_audit_logger.log_conversation_start(
                     user_id=user_id,
                     conversation_id=conversation_id,
                     source_ip=x_forwarded_for,
@@ -135,7 +135,7 @@ async def chat_with_lucy(
                 created_at=datetime.utcnow(),
                 last_activity=datetime.utcnow(),
             )
-            log_lucy_conversation_start(
+            _lucy_audit_logger.log_conversation_start(
                 user_id=user_id,
                 conversation_id=conversation_id,
                 source_ip=x_forwarded_for,
@@ -294,7 +294,7 @@ async def clear_context(
         message_count = len(context.messages)
         tool_executions = len([m for m in context.messages if m.get("role") == "tool"])
         
-        log_lucy_conversation_end(
+        _lucy_audit_logger.log_conversation_end(
             user_id=user_id,
             conversation_id=conversation_id,
             message_count=message_count,

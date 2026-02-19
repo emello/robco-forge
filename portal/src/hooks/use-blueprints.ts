@@ -7,6 +7,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api-client';
 import type { Blueprint, OperatingSystem } from '@/types';
+import { mockBlueprints } from '@/lib/mock-data';
 
 // Query keys
 export const blueprintKeys = {
@@ -20,7 +21,18 @@ export const blueprintKeys = {
 export function useBlueprints() {
   return useQuery({
     queryKey: blueprintKeys.lists(),
-    queryFn: () => apiClient.listBlueprints(),
+    queryFn: async () => {
+      try {
+        const data = await apiClient.listBlueprints();
+        if (!data || (Array.isArray(data) && data.length === 0)) {
+          return mockBlueprints;
+        }
+        return data;
+      } catch (error) {
+        console.warn('API failed, using mock blueprints:', error);
+        return mockBlueprints;
+      }
+    },
   });
 }
 

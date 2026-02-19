@@ -20,8 +20,8 @@ export default function BlueprintsPage() {
   const { data: blueprints, isLoading, error } = useBlueprints();
 
   // Filter blueprints
-  const filteredBlueprints = blueprints?.items
-    .filter((bp) => {
+  const filteredBlueprints = blueprints
+    ?.filter((bp) => {
       if (osFilter !== 'all' && bp.operating_system !== osFilter) return false;
       if (teamFilter === 'team' && !bp.team_id) return false;
       if (teamFilter === 'global' && bp.team_id) return false;
@@ -222,7 +222,7 @@ export default function BlueprintsPage() {
       {/* Results Count */}
       {!isLoading && !error && filteredBlueprints.length > 0 && (
         <div className="mt-6 text-sm text-gray-600 dark:text-gray-400 retro:text-green-400 retro:font-mono">
-          Showing {filteredBlueprints.length} of {blueprints?.items.length || 0} blueprints
+          Showing {filteredBlueprints.length} of {blueprints?.length || 0} blueprints
         </div>
       )}
 

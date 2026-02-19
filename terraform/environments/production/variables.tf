@@ -93,17 +93,8 @@ variable "fsx_throughput_capacity_mbps" {
   default     = 512
 }
 
-variable "active_directory_domain_name" {
-  description = "Active Directory domain name"
-  type        = string
-  default     = "robco.local"
-}
-
-variable "active_directory_dns_ips" {
-  description = "Active Directory DNS server IPs"
-  type        = list(string)
-  default     = []
-}
+# Active Directory domain name and DNS IPs are auto-generated from WorkSpaces module
+# No need to specify them as variables
 
 variable "active_directory_username" {
   description = "Active Directory service account username"

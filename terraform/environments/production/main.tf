@@ -96,29 +96,7 @@ module "rds" {
   depends_on = [module.networking]
 }
 
-# FSx Module
-module "fsx" {
-  source = "../../modules/fsx"
-  
-  environment                    = local.environment
-  vpc_id                         = module.networking.vpc_id
-  private_subnet_ids             = module.networking.private_subnet_ids
-  workspaces_security_group_id   = module.networking.workspaces_security_group_id
-  eks_pods_security_group_id     = module.networking.eks_pods_security_group_id
-  storage_capacity_gb            = var.fsx_storage_capacity_gb
-  throughput_capacity_mbps       = var.fsx_throughput_capacity_mbps
-  active_directory_domain_name   = var.active_directory_domain_name
-  active_directory_dns_ips       = var.active_directory_dns_ips
-  active_directory_username      = var.active_directory_username
-  active_directory_password      = var.active_directory_password
-  active_directory_ou_dn         = var.active_directory_ou_dn
-  
-  tags = local.common_tags
-  
-  depends_on = [module.networking]
-}
-
-# WorkSpaces Module
+# WorkSpaces Module (creates Active Directory first)
 module "workspaces" {
   source = "../../modules/workspaces"
   
@@ -135,6 +113,28 @@ module "workspaces" {
   tags = local.common_tags
   
   depends_on = [module.networking]
+}
+
+# FSx Module (uses Active Directory from WorkSpaces module)
+module "fsx" {
+  source = "../../modules/fsx"
+  
+  environment                    = local.environment
+  vpc_id                         = module.networking.vpc_id
+  private_subnet_ids             = module.networking.private_subnet_ids
+  workspaces_security_group_id   = module.networking.workspaces_security_group_id
+  eks_pods_security_group_id     = module.networking.eks_pods_security_group_id
+  storage_capacity_gb            = var.fsx_storage_capacity_gb
+  throughput_capacity_mbps       = var.fsx_throughput_capacity_mbps
+  active_directory_domain_name   = module.workspaces.directory_name
+  active_directory_dns_ips       = module.workspaces.directory_dns_ips
+  active_directory_username      = var.active_directory_username
+  active_directory_password      = var.directory_password  # Same as directory password
+  active_directory_ou_dn         = var.active_directory_ou_dn
+  
+  tags = local.common_tags
+  
+  depends_on = [module.networking, module.workspaces]
 }
 
 # Monitoring Module
